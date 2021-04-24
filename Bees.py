@@ -3,13 +3,14 @@ import math
 
 class Bees:
 
-    def __init__(self, size_x, size_y, best_site, elite_site, nre, nrb, ns):
+    def __init__(self, size_x, size_y, best_site, elite_site, nre, nrb, ns, max_value):
         self.size_x = size_x
         self.size_y = size_y
         self.best_site = best_site
         self.elit_site = elite_site
         self.nre = nre
         self.nrb = nrb
+        self.max_value = max_value
 
         self.flower_patch_radius = 3
         self.solutions = []
@@ -22,9 +23,8 @@ class Bees:
         self.__create_field__()
 
     def __create_field__(self):
-        print("test")
         for _ in range(0, self.size_x * self.size_y):
-            random_int = random.randint(0, 5)
+            random_int = random.randint(0, self.max_value)
             self.solutions.append(random_int)
 
     def do_first_step(self):
@@ -94,11 +94,12 @@ class Bees:
 
             # assign all the foragers
             for _ in range(0, num_foragers):
-                random_int = random.randint(0, len(possible_landings)-1)
-                if not discovered[random_int]:
-                    forager_group.append(possible_landings[random_int])
-                    discovered[possible_landings[random_int]] = True
-                del possible_landings[random_int]
+                if len(possible_landings) > 0:
+                    random_int = random.randint(0, len(possible_landings)-1)
+                    if not discovered[random_int]:
+                        forager_group.append(possible_landings[random_int])
+                        discovered[possible_landings[random_int]] = True
+                    del possible_landings[random_int]
 
             self.foragers.append(forager_group)
     
@@ -121,7 +122,7 @@ class Bees:
             if current_scout_index == 0:
                 radius = self.flower_patches[scout_position][1]
                 if radius <= 1:
-                    self.local_maximums.append(forager_group[0], self.solutions[forager_group[0]])
+                    self.local_maximums.append([forager_group[0], self.solutions[forager_group[0]]])
                     self.new_scout_bees += 1
                     del self.scout_bees[scout_position]
                     del self.flower_patches[scout_position]
